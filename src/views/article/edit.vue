@@ -36,7 +36,7 @@
               <label>发布时间</label><br/>
               <el-date-picker
                 style="width: 100%;z-index:888"
-                type="date"
+                type="datetime"
                 placeholder="请选择"
                 v-model="info.publishTime"
                 @change="timeChange"
