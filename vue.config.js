@@ -6,7 +6,7 @@ function resolve(dir) {
   return path.join(__dirname, dir)
 }
 
-const name = defaultSettings.title || 'vue Admin Template' // page title
+const name = defaultSettings.title || '管理系统' // page title
 
 // If your port is set to 80,
 // use administrator privileges to execute the command line.
@@ -36,6 +36,16 @@ module.exports = {
       warnings: false,
       errors: true
     },
+    //  开发环境代理配置 解决跨域问题
+    // proxy: {
+    //   [process.env.VUE_APP_BASE_API]: {
+    //     target: 'https://snsadmin.codefav.com',
+    //     changeOrigin: true,
+    //     pathRewrite: {
+    //       ['^' + process.env.VUE_APP_BASE_API]: ''
+    //     }
+    //   }
+    // },
     before: require('./mock/mock-server.js')
   },
   configureWebpack: {

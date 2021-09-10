@@ -8,13 +8,13 @@
 
     <div class="right-menu">
       <template v-if="device!=='mobile'">
-        <search id="header-search" class="right-menu-item" />
+        <!-- <search id="header-search" class="right-menu-item" /> -->
 
-        <error-log class="errLog-container right-menu-item hover-effect" />
+        <!-- <error-log class="errLog-container right-menu-item hover-effect" /> -->
 
-        <screenfull id="screenfull" class="right-menu-item hover-effect" />
+        <!-- <screenfull id="screenfull" class="right-menu-item hover-effect" /> -->
 
-        <lang-select class="right-menu-item hover-effect" />
+        <!-- <lang-select class="right-menu-item hover-effect" /> -->
 
       </template>
 
@@ -25,14 +25,14 @@
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown">
-          <router-link to="/admin-users/profile">
+          <!-- <router-link to="/admin-users/profile">
             <el-dropdown-item>
               {{ $t('navbar.profile') }}
             </el-dropdown-item>
-          </router-link>
-          <el-dropdown-item divided @click.native="logout">
+          </router-link> -->
+          <!-- <el-dropdown-item divided @click.native="logout">
             <span style="display:block;">{{ $t('navbar.logOut') }}</span>
-          </el-dropdown-item>
+          </el-dropdown-item> -->
         </el-dropdown-menu>
       </el-dropdown>
     </div>
@@ -40,9 +40,9 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
-import Breadcrumb from '@/components/Breadcrumb';
-import Hamburger from '@/components/Hamburger';
+import { mapGetters } from 'vuex'
+import Breadcrumb from '@/components/Breadcrumb'
+import Hamburger from '@/components/Hamburger'
 // import ErrorLog from '@/components/ErrorLog';
 // import Screenfull from '@/components/Screenfull';
 // import LangSelect from '@/components/LangSelect';
@@ -66,14 +66,14 @@ export default {
   },
   methods: {
     toggleSideBar() {
-      this.$store.dispatch('app/toggleSideBar');
+      this.$store.dispatch('app/toggleSideBar')
     },
     async logout() {
-      await this.$store.dispatch('admin-user/logout');
-      this.$router.push(`/login?redirect=${this.$route.fullPath}`);
+      // await this.$store.dispatch('admin-user/logout')
+      this.$router.push(`/login?redirect=${this.$route.fullPath}`)
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

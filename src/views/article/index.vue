@@ -7,34 +7,14 @@
             <el-col type="flex" :span="18">
               <h1 class="page-title"><i class="el-icon-picture" /> 资讯列表</h1>
               <router-link
-                v-if="permissions.create"
-                to="/photo-editor/brush_texture/create"
+                to="/article/add"
                 class="btn btn-success btn-add-new"
               >
                 <i class="voyager-plus" /> <span>增加</span>
               </router-link>
               <!-- <a v-if="permissions.create" @click.prevent.stop="edit(0)" class="btn btn-success btn-add-new">
                 <i class="voyager-plus" /> <span>{{ $t('table.add') }}</span>
-              </a> --> </el-col><el-col type="flex" :span="10" align="middle">
-              <el-col
-                v-if="filterOptions && filterOptions.length > 0"
-                :span="10"
-              >
-                <el-select
-                  v-model="listQuery.sort"
-                  placeholder="显示排序"
-                  style="margin-right: 20px"
-                  @change="onFilterChange"
-                >
-                  <el-option
-                    v-for="item in filterOptions"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  />
-                </el-select>
-              </el-col>
-            </el-col>
+              </a> --> </el-col>
           </el-row>
         </el-col>
       </el-row>
@@ -52,17 +32,14 @@
                     <tr>
                       <th>id</th>
 
-                      <th>笔刷名称</th>
+                      <th>标题</th>
 
                       <th>缩略图</th>
 
-                      <th>资源包</th>
-                      <th>是否为会员资源</th>
-                      <th>是否随机</th>
-
                       <th>排序</th>
-
-                      <th>资源包32位MD5校验值</th>
+                      <th>是否推荐</th>
+                      <th>是否置顶</th>
+                      <th>状态</th>
                       <th>添加时间</th>
 
                       <th class="actions text-right">
@@ -76,71 +53,80 @@
                       <td>
                         {{ item.id }}
                       </td>
-
-                      <!-- <td v-if="item.pid==0" @click="onFilterChange(item.id,item.category_name)">
-                        <span style="color:#004eff; cursor:pointer ">{{ item.category_name }}</span>
-                      </td> -->
-                      <!-- <td v-else> -->
                       <td>
-                        {{ item.brushTextureTitle }}
+                        {{ item.title }}<br/>
+                        {{ item.subTitle }}
                       </td>
 
                       <td>
                         <a
-                          :href="item.brushTextureIcon"
+                          :href="item.coverPic"
                           target="_blank"
                         ><img
-                          :src="
-                            item.brushTextureIcon +
-                              '?x-oss-process=image/resize,w_50'
-                          "
+                          :src="item.coverPic"
                           width="80"
                         ></a>
                       </td>
 
                       <td>
-                        <a :href="item.brushTextureZip" target="_blank">下载文件</a>
-                      </td>
-                      <td>
-                        {{ item.vipResources===0?'不是':'是' }}
-                      </td>
-                      <td>
-                        {{ item.showTextureRandom===0?'不随机':'随机' }}
-                      </td>
-
-                      <td>
                         {{ item.sort }}
                       </td>
-
                       <td>
-                        {{ item.brushTextureZipMd5 }}
+                        {{ item.recommend!=0?'推荐':'未推荐' }}
+                      </td>
+                      <td>
+                        {{ item.top!=0?'置顶':'未置顶' }}
                       </td>
 
                       <td>
+                        <span v-if="item.status===0">正常</span>
+                        <span v-else-if="item.status===1">待发布</span>
+                        <span v-else-if="item.status===100">已删除</span>
+                      </td>
+                      <td>
+                        {{ item.createTime }}
+                      </td>
+
+                      <!-- <td>
                         {{ formatDate(item.createdAt) }}
-                      </td>
+                      </td> -->
 
                       <td class="no-sort no-click bread-actions">
                         <!-- <a class="btn btn-sm btn-info" @click="statistics_pop(item.id)">修改排序</a> -->
                         <a
-                          v-if="permissions.delete"
-                          id="delete-1"
                           :title="'删除'"
                           class="btn btn-sm btn-danger pull-right delete"
-                          data-id="1"
-                          @click.prevent.stop="deleteBrushTexture(item)"
+                          @click.prevent.stop="delete_article(item)"
                         >
                           <i class="voyager-trash" />
-                          <span class="hidden-xs hidden-sm">{{
+                          <span class="hidden-xs hidden-sm">
                             删除
-                          }}</span>
+                          </span>
+                        </a>
+                        <a
+                          :title="item.top==1?'取消置顶':'置顶'"
+                          class="btn btn-sm btn-info pull-right delete"
+                          @click.prevent.stop="click_top(item)"
+                        >
+                          <i class="el-icon-top" />
+                          <span v-if="item.top==1">取消置顶</span>
+                          <span v-if="item.top==0">置顶</span>
+                        </a>
+                        <a
+                          :title="item.recommend==1?'取消推荐':'推荐'"
+                          class="btn btn-sm btn-success pull-right delete"
+                          @click.prevent.stop="click_recommend(item)"
+                        >
+                          <i class="el-icon-star-on" />
+                          <span v-if="item.recommend==1">取消推荐</span>
+                          <span v-if="item.recommend==0">推荐</span>
                         </a>
 
                         <router-link
-                          :to="'/photo-editor/brush_texture/edit/' + item.id"
+                          :to="'/article/edit?id=' + item.id"
                           class="btn btn-sm btn-primary pull-right edit"
                         >
-                          <i class="el-icon-aim" />
+                          <i class="el-icon-edit" />
                           <span class="hidden-xs hidden-sm">修改</span>
                         </router-link>
                       </td>
@@ -151,9 +137,8 @@
                 <pagination
                   v-show="total > 0"
                   :total="total"
-                  :type.sync="listQuery.type"
-                  :page.sync="listQuery.page"
-                  :limit.sync="listQuery.limit"
+                  :page.sync="listQuery.currentPage"
+                  :limit.sync="listQuery.pageSize"
                   @pagination="getList"
                 />
               </div>
@@ -170,17 +155,33 @@
     >
       确认删除改记录吗？
     </my-modal>
+    <my-modal
+      id="modal-sm1"
+      ref="myModal1"
+      :title="'确认操作吗'"
+      @ok="handleOkTop"
+    >
+      确认操作吗？
+    </my-modal>
+    <my-modal
+      id="modal-sm2"
+      ref="myModal2"
+      :title="'确认操作吗'"
+      @ok="handleOkRecommend"
+    >
+      确认操作吗？
+    </my-modal>
   </div>
 </template>
 
 <script>
-// import { listBrushTexture, deleteBrushTexture, infoBrushTexture, sortSaveBrushTexture } from '@/api/photo-editor';
+import { articleTop, articleRecommend, articleList, articleDelete } from '@/api/article'
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
-// import Moment from 'moment';
+import Moment from 'moment';
 // import draggable from 'vuedraggable';
 
 export default {
-  name: 'News',
+  name: 'ArticleList',
   components: { Pagination },
   data() {
     return {
@@ -208,51 +209,79 @@ export default {
         status: 1
       },
       listQuery: {
-        page: 1,
-        pid: 0,
-        sort: 1,
+        currentPage: 1,
         keywords: '',
-        type: '',
-        limit: 20
+        pageSize: 20
+      },
+      topParams: {
+        id: 0,
+        status: 0
+      },
+      recommendParams: {
+        id: 0,
+        status: 0
       },
       permissions: (this.$route.meta && this.$route.meta.permissions) || {}
     }
   },
   created() {
-    // this.getList();
+    this.getList();
   },
   methods: {
-    statistics_pop(id) {
-      infoBrushTexture(id).then(response => {
+    click_top(item) {
+      this.$refs.myModal1 && this.$refs.myModal1.show(item)
+      if (item.top === 1) {
+        this.topParams.status = 0
+      } else {
+        this.topParams.status = 1
+      }
+    },
+    click_recommend(item) {
+      this.$refs.myModal2 && this.$refs.myModal2.show(item)
+      if (item.recommend === 1) {
+        this.recommendParams.status = 0
+      } else {
+        this.recommendParams.status = 1
+      }
+    },
+    handleOkRecommend(finish, obj) {
+      this.recommendParams.id = obj.id
+      articleRecommend(this.recommendParams).then(response => {
+        const info = response.data
+        this.sort_info.id = info.id
+        this.sort_info.sort = info.sort
+        this.$bvModal.show('modal-sm2')
+        finish && finish('success')
+        this.getList()
+      }).catch(error => {
+        console.log(error);
+        alert(error.msg)
+      })
+    },
+    handleOkTop(finish, obj) {
+      this.topParams.id = obj.id
+      articleTop(this.topParams).then(response => {
         const info = response.data
         this.sort_info.id = info.id
         this.sort_info.sort = info.sort
         this.$bvModal.show('modal-sm1')
+        finish && finish('success')
+        this.getList()
       }).catch(error => {
         alert(error)
       })
-    },
-    saveSort(finish) {
-      finish && finish('success')
-      sortSaveBrushTexture(this.sort_info)
-        .then((data) => {
-          this.getList()
-        })
-        .catch((error) => {
-          console.log(error)
-        })
     },
     onFilterChange() {
       console.log(this.listQuery)
       this.listQuery.page = 1
       this.getList()
     },
-    deleteBrushTexture(item) {
+    delete_article(item) {
       this.pcount = item.pcount
       this.$refs.myModal && this.$refs.myModal.show(item)
     },
     handleOk(finish, obj) {
-      deleteBrushTexture({ id: obj.id })
+      articleDelete({ id: obj.id })
         .then((data) => {
           this.getList()
           finish && finish('success')
@@ -267,8 +296,8 @@ export default {
     },
     getList() {
       this.listLoading = true
-      listBrushTexture(this.listQuery).then((response) => {
-        this.list = response.data.list
+      articleList(this.listQuery).then((response) => {
+        this.list = response.data.records
         this.total = response.data.total
         this.listLoading = false
       })

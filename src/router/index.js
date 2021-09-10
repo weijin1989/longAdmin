@@ -56,20 +56,47 @@ export const constantRoutes = [
   },
 
   {
-    path: '/news',
+    path: '/article',
     component: Layout,
-    redirect: '/news',
-    // name: 'news',
-    // meta: { title: '资讯管理', icon: 'el-icon-s-help' },
+    redirect: '/article',
+    name: 'article',
+    meta: { title: '文章管理', icon: 'el-icon-s-help' },
     children: [
       {
-        path: 'news',
-        name: 'news',
-        component: () => import('@/views/news/index'),
-        meta: { title: '资讯管理', icon: 'table' }
+        path: 'index',
+        name: 'index',
+        component: () => import('@/views/article/index'),
+        meta: { title: '文章列表', icon: 'el-icon-s-order' }
+      },
+      {
+        path: 'add',
+        name: 'articleAdd',
+        component: () => import('@/views/article/create'),
+        meta: { title: '添加文章', icon: 'el-icon-circle-plus' }
+      },
+      {
+        path: 'edit',
+        name: 'articleEdit',
+        component: () => import('@/views/article/edit')
+        // meta: { title: '添加文章', icon: 'el-icon-circle-plus' }
       }
     ]
   },
+  // {
+  //   path: '/article',
+  //   component: Layout,
+  //   redirect: '/article',
+  //   // name: 'news',
+  //   // meta: { title: '资讯管理', icon: 'el-icon-s-help' },
+  //   children: [
+  //     {
+  //       path: 'article',
+  //       name: 'article',
+  //       component: () => import('@/views/article/index'),
+  //       meta: { title: '文章管理', icon: 'table' }
+  //     }
+  //   ]
+  // },
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
 ]
