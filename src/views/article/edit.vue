@@ -18,7 +18,7 @@
                 placeholder="标题"
                 maxlength="40"
                 value=""
-              >
+              />
             </div>
             <div class="form-group">
               <label>副标题</label>
@@ -30,18 +30,18 @@
                 placeholder="副标题"
                 maxlength="40"
                 value=""
-              >
+              />
             </div>
             <div class="form-group">
-              <label>发布时间</label><br/>
+              <label>发布时间</label><br />
               <el-date-picker
-                style="width: 100%;z-index:888"
+                style="width: 100%; z-index: 888"
                 type="datetime"
                 placeholder="请选择"
                 v-model="info.publishTime"
                 @change="timeChange"
                 :format="'yyyy-MM-dd HH:mm:ss'"
-                >
+              >
                 <!-- :picker-options="timeConfig" -->
               </el-date-picker>
             </div>
@@ -55,22 +55,22 @@
                 placeholder="作者ID"
                 maxlength="40"
                 value=""
-              >
+              />
             </div>
             <div class="form-group">
-              <label>分类</label><br/>
+              <label>分类</label><br />
               <el-select
-                  v-model="info.catId"
-                  placeholder="选择分类"
-                  style="margin-right: 20px"
-                >
-                  <el-option
-                    v-for="item in category"
-                    :key="item.id"
-                    :label="item.catName"
-                    :value="item.id"
-                  />
-                </el-select>
+                v-model="info.catId"
+                placeholder="选择分类"
+                style="margin-right: 20px"
+              >
+                <el-option
+                  v-for="item in category"
+                  :key="item.id"
+                  :label="item.catName"
+                  :value="item.id"
+                />
+              </el-select>
             </div>
             <div class="form-group">
               <label>跳转链接</label>
@@ -81,7 +81,7 @@
                 name="redirectUrl"
                 placeholder="跳转链接"
                 value=""
-              >
+              />
             </div>
             <div class="form-group">
               <label>排序</label>
@@ -93,7 +93,7 @@
                 placeholder="排序"
                 maxlength="40"
                 value=""
-              >
+              />
             </div>
             <div class="form-group">
               <label>浏览数量</label>
@@ -105,16 +105,16 @@
                 placeholder="浏览数量"
                 maxlength="40"
                 value=""
-              >
+              />
             </div>
             <div class="form-group">
-              <label>状态</label><br>
+              <label>状态</label><br />
               <el-radio v-model="info.status" :label="0">正常</el-radio>
               <el-radio v-model="info.status" :label="1">待发布</el-radio>
             </div>
             <div class="form-group">
               <label>文章描述</label>
-              
+
               <textarea v-model="info.description" class="form-control" />
             </div>
             <div class="form-group">
@@ -136,7 +136,11 @@
                   class="binding-item"
                 >
                   <el-row class="row-box">
-                    <el-col :span="6" class="row-left" style="margin-right: 10px;">
+                    <el-col
+                      :span="6"
+                      class="row-left"
+                      style="margin-right: 10px"
+                    >
                       <input
                         v-model="item.picName"
                         type="text"
@@ -144,9 +148,13 @@
                         name="parameter"
                         placeholder="图片名称"
                         value=""
-                      >
+                      />
                     </el-col>
-                    <el-col :span="6" class="row-left" style="margin-right: 10px;">
+                    <el-col
+                      :span="6"
+                      class="row-left"
+                      style="margin-right: 10px"
+                    >
                       <input
                         v-model="item.url"
                         type="text"
@@ -154,28 +162,30 @@
                         name="parameter"
                         placeholder="图片链接（点击时的链接）"
                         value=""
-                      >
+                      />
                     </el-col>
                     <el-col :span="8" class="row-left">
                       <input
-                        style="padding:5px"
+                        style="padding: 5px"
                         type="file"
-                        :name="'image'+index"
+                        :name="'image' + index"
                         @change="uploadPic(index)"
-                      >&nbsp;&nbsp;&nbsp;
-                      <img :src="item.url_path" style="width:50px;background:#d5d5d5;border:1px solid #000">
+                      />&nbsp;&nbsp;&nbsp;
+                      <img
+                        :src="item.url_path"
+                        style="
+                          width: 50px;
+                          background: #d5d5d5;
+                          border: 1px solid #000;
+                        "
+                      />
                     </el-col>
                     <el-col :span="3">
-                      <el-row
-                        style=" font-size:28px;"
-                        type="flex"
-                        justify="end"
-                      >
+                      <el-row style="font-size: 28px" type="flex" justify="end">
                         <span
                           class="el-icon-remove-outline add-btn"
                           @click="batchDel(index)"
                         />
-
                       </el-row>
                     </el-col>
                   </el-row>
@@ -192,7 +202,7 @@
             <div class="form-group">
               <label for="cover_image">封面图</label>
               <img
-                :src="info.coverPicPath != '' ? info.coverPicPath : none_img"
+                :src="info.coverPicPath"
                 style="
                   max-width: 100px;
                   height: auto;
@@ -202,18 +212,17 @@
                   border: 1px solid #ddd;
                   margin-bottom: 10px;
                 "
-              >
+              />
               <input
                 type="file"
                 data-name="coverPic"
                 name="coverPic"
                 @change="upload('coverPic')"
-              >
+              />
             </div>
           </div>
         </div>
       </div>
-
     </div>
 
     <button
@@ -227,14 +236,15 @@
 </template>
 
 <script>
+import { articleUpdate, articleOne } from '@/api/article'
 import {
-  articleUpdate, articleOne
-} from '@/api/article'
-import {
-  uploadImg, getCategory, uploadEditorImg
+  uploadImg,
+  getCategory,
+  uploadEditorImg,
+  domain_name,
 } from '@/api/common'
 import { Loading } from 'element-ui'
-import Moment from 'moment';
+import Moment from 'moment'
 import E from 'wangeditor'
 import $ from 'jquery'
 
@@ -255,8 +265,8 @@ export default {
           picName: '',
           url: '',
           url_path: '',
-          picPath: ''
-        }
+          picPath: '',
+        },
       ],
       batchFormNum: 0,
       info: {
@@ -273,14 +283,13 @@ export default {
         status: 0,
         subTitle: '',
         title: '',
-        viewCount: 0
+        viewCount: 0,
       },
       loading: '',
-      none_img: '/images/default-avatar.png'
+      none_img: '/images/default-avatar.png',
     }
   },
-  created() {
-  },
+  created() {},
   mounted() {
     this.getcategory()
     // this.initTimeConfig();
@@ -295,43 +304,43 @@ export default {
   },
   methods: {
     getfind(id) {
-      articleOne({ id: id }).then(response => {
-        this.info = response.data
-        this.Eeditor.txt.html(response.data.content)
-        this.batchForm = response.data.pics
-        // response.data.pics.forEach((val, index) => {
-        //   this.batchForm[index].url_path = val.picPath
-        // })
-        this.info.coverPicPath = response.data.coverPic
-      }).catch(() => {
-      })
+      articleOne({ id: id })
+        .then((response) => {
+          this.info = response.data
+          this.Eeditor.txt.html(response.data.content)
+          this.batchForm = response.data.pics
+          response.data.pics.forEach((val, index) => {
+            this.batchForm[index].url_path = domain_name() + val.picPath
+          })
+          this.info.coverPicPath = domain_name() + response.data.coverPic
+        })
+        .catch(() => {})
     },
     /**
      * 添加标签项
      */
     addField() {
-      this.counter.push({});
-      this.counter_num = this.counter_num + 1;
+      this.counter.push({})
+      this.counter_num = this.counter_num + 1
     },
     // 动态删除批量绑定数据
     batchDel(index) {
       if (this.batchForm.length <= 1) {
-        this.batchForm[index].picName = '';
-        this.batchForm[index].url = 0;
-        this.batchForm[index].picPath = '';
-        this.batchForm[index].url_path = '';
-        this.batchFormNum = 0;
-      }
-      else {
+        this.batchForm[index].picName = ''
+        this.batchForm[index].url = 0
+        this.batchForm[index].picPath = ''
+        this.batchForm[index].url_path = ''
+        this.batchFormNum = 0
+      } else {
         // 先删除当前下标的数据
-        this.batchForm.splice(index, 1);
-        const num = [];
+        this.batchForm.splice(index, 1)
+        const num = []
         // 循环找出所有下标,不找出最大值，不根据顺序删除会报错
         this.batchForm.forEach((item) => {
-          num.push(item.index);
-        });
+          num.push(item.index)
+        })
         // 查出数组中最大值，赋值给batchFormNum
-        this.batchFormNum = Math.max(...num);
+        this.batchFormNum = Math.max(...num)
       }
     },
     batchAdd() {
@@ -339,10 +348,11 @@ export default {
       this.batchFormNum = this.batchForm.length + 1
     },
     getcategory() {
-      getCategory({ 'type': 'news' }).then(response => {
-        this.category = response.data
-      }).catch(() => {
-      })
+      getCategory({ type: 'news' })
+        .then((response) => {
+          this.category = response.data
+        })
+        .catch(() => {})
     },
     init() {
       this.Eeditor = new E('#content')
@@ -351,9 +361,7 @@ export default {
       this.Eeditor.config.uploadFileName = 'file'
       this.Eeditor.config.height = 500
       this.Eeditor.config.uploadImgMaxLength = 1
-      this.Eeditor.config.excludeMenus = [
-        'video'
-      ]
+      this.Eeditor.config.excludeMenus = ['video']
       this.Eeditor.create()
     },
     change(e) {
@@ -363,7 +371,7 @@ export default {
       reader.onload = () => {
         const formData = {
           files: reader.result,
-          files_name: file.name
+          files_name: file.name,
         }
         console.log(formData)
         console.log(this.$refs)
@@ -391,7 +399,7 @@ export default {
       this.loading = Loading.service({
         lock: true,
         text: '上传中……',
-        background: 'rgba(0, 0, 0, 0.7)'
+        background: 'rgba(0, 0, 0, 0.7)',
       })
       if ($('input[name=' + name + ']').val()) {
         const file = $('input[name=' + name + ']')[0].files[0]
@@ -402,22 +410,33 @@ export default {
         const formData = new FormData()
         formData.append('file', file)
         const params = formData
-        uploadImg(params)
-          .then((data) => {
-            var img = new Image()
-            img.src = data.data.url
-            img.onload = function() {
-              if (name === 'coverPic') {
-                that.info.coverPicPath = data.data.url
-                that.info.coverPic = data.data.path
-              }
+        const reader = new FileReader()
+        reader.readAsDataURL(file)
+        reader.onload = () => {
+          uploadImg(params)
+            .then((data) => {
+              that.info.coverPicPath =
+                data.data.url + '?' + Math.ceil(Math.random() * 100)
+              that.info.coverPic = data.data.path
               that.loading.close()
-            }
-          })
-          .catch((error) => {
-            alert(error)
-          })
+              that.info.subTitle = that.info.subTitle + ' ';
+              // var img = new Image()
+              // img.src = data.data.url
+              // img.onload = function() {
+              //   if (name === 'coverPic') {
+              //     that.info.coverPicPath = data.data.url + '?' + Math.ceil(Math.random() * 100)
+              //     that.info.coverPic = data.data.path
+              //     console.log(that.info)
+              //   }
+              //   that.loading.close()
+              // }
+            })
+            .catch((error) => {
+              alert(error)
+            })
+        }
       }
+      that.loading.close()
     },
     uploadPic(index) {
       const fileName = 'image/jpg,image/jpeg,image/gif,image/png'
@@ -426,7 +445,7 @@ export default {
       this.loading = Loading.service({
         lock: true,
         text: '上传中……',
-        background: 'rgba(0, 0, 0, 0.7)'
+        background: 'rgba(0, 0, 0, 0.7)',
       })
       if ($('input[name=image' + index + ']').val()) {
         const file = $('input[name=image' + index + ']')[0].files[0]
@@ -441,13 +460,15 @@ export default {
           .then((data) => {
             var img = new Image()
             img.src = data.data.url
-            img.onload = function() {
+            img.onload = function () {
               that.batchForm[index].picPath = data.data.path
-              that.batchForm[index].url_path = data.data.url + '?' + Math.ceil(Math.random() * 100)
-              that.batchForm[index].picName = that.batchForm[index].picName +' '
+              that.batchForm[index].url_path =
+                data.data.url + '?' + Math.ceil(Math.random() * 100)
+              that.batchForm[index].picName =
+                that.batchForm[index].picName + ' '
               that.loading.close()
               console.log('infoinfo', that.batchForm)
-            }
+            };
           })
           .catch((error) => {
             alert(error)
@@ -457,16 +478,15 @@ export default {
     submit() {
       this.doSubmit()
     },
-    initTimeConfig () {
+    initTimeConfig() {
       let self = this
       // 开始时间配置
       this.timeConfig = {
-          disabledDate (time) {
-              if (self.endTime) {
-                  return time.getTime() > new 
-                  Date(self.endTime).getTime()
-              }
+        disabledDate(time) {
+          if (self.endTime) {
+            return time.getTime() > new Date(self.endTime).getTime()
           }
+        },
       }
     },
     formatDate(date) {
@@ -487,6 +507,7 @@ export default {
       if (this.info.publishTime) {
         this.info.publishTime = this.formatDate(this.info.publishTime)
       }
+      this.info.subTitle = this.info.subTitle.trim()
       const info = this.info
       // console.log(info)
       // return false;
@@ -515,46 +536,46 @@ export default {
         .catch((error) => {
           console.log(error)
         })
-    }
-  }
+    },
+  },
 }
 </script>
 <style lang="scss" scoped>
-  .actions {
-    position: absolute;
-    right: 0px;
-    top: -7px;
-  }
-  .binding-item{
-    margin-bottom:10px;
+.actions {
+  position: absolute;
+  right: 0px;
+  top: -7px;
+}
+.binding-item {
+  margin-bottom: 10px;
+}
+
+.example {
+  display: flex;
+  flex-direction: column;
+
+  .editor {
+    height: 40rem;
+    overflow: hidden;
   }
 
-  .example {
-    display: flex;
-    flex-direction: column;
+  .output {
+    width: 100%;
+    height: 20rem;
+    margin: 0;
+    border: 1px solid #ccc;
+    overflow-y: auto;
+    resize: vertical;
 
-    .editor {
-      height: 40rem;
-      overflow: hidden;
+    &.code {
+      padding: 1rem;
+      height: 16rem;
     }
 
-    .output {
-      width: 100%;
-      height: 20rem;
-      margin: 0;
-      border: 1px solid #ccc;
-      overflow-y: auto;
-      resize: vertical;
-
-      &.code {
-        padding: 1rem;
-        height: 16rem;
-      }
-
-      &.ql-snow {
-        border-top: none;
-        height: 24rem;
-      }
+    &.ql-snow {
+      border-top: none;
+      height: 24rem;
     }
   }
+}
 </style>

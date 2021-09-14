@@ -20,3 +20,7 @@ export function getCategory(query) {
   })
 }
 
+export function domain_name() {
+  return 'https://sns-static.codefav.com'
+}
+
