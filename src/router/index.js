@@ -64,7 +64,7 @@ export const constantRoutes = [
     children: [
       {
         path: 'index',
-        name: 'index',
+        name: 'articleList',
         component: () => import('@/views/article/index'),
         meta: { title: '文章列表', icon: 'el-icon-s-order' }
       },
@@ -79,6 +79,27 @@ export const constantRoutes = [
         name: 'articleEdit',
         component: () => import('@/views/article/edit')
         // meta: { title: '添加文章', icon: 'el-icon-circle-plus' }
+      }
+    ]
+  },
+
+  {
+    path: '/users',
+    component: Layout,
+    redirect: '/users',
+    name: 'user',
+    meta: { title: '用户管理', icon: 'el-icon-user' },
+    children: [
+      {
+        path: 'index',
+        name: 'userList',
+        component: () => import('@/views/users/index'),
+        meta: { title: '用户列表', icon: 'el-icon-user' }
+      },
+      {
+        path: 'edit',
+        name: 'userEdit',
+        component: () => import('@/views/users/edit')
       }
     ]
   },
