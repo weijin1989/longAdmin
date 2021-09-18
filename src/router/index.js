@@ -95,12 +95,35 @@ export const constantRoutes = [
         name: 'userList',
         component: () => import('@/views/users/index'),
         meta: { title: '用户列表', icon: 'el-icon-user' }
-      },
-      {
-        path: 'edit',
-        name: 'userEdit',
-        component: () => import('@/views/users/edit')
       }
+      // ,
+      // {
+      //   path: 'edit',
+      //   name: 'userEdit',
+      //   component: () => import('@/views/users/edit')
+      // }
+    ]
+  },
+
+  {
+    path: '/order',
+    component: Layout,
+    redirect: '/order',
+    name: 'order',
+    meta: { title: '订单管理', icon: 'el-icon-s-order' },
+    children: [
+      {
+        path: 'index',
+        name: 'orderList',
+        component: () => import('@/views/order/index'),
+        meta: { title: '订单列表', icon: 'el-icon-s-order' }
+      }
+      // ,
+      // {
+      //   path: 'edit',
+      //   name: 'userEdit',
+      //   component: () => import('@/views/users/edit')
+      // }
     ]
   },
   // {
