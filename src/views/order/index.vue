@@ -13,6 +13,7 @@
               range-separator="-"
               start-placeholder="开始时间"
               end-placeholder="结束时间"
+              v-model="time"
               :picker-options="pickerOptions0"
               type="daterange"
               placeholder="选择时间范围"
@@ -153,6 +154,7 @@ export default {
       list: null,
       total: 0,
       listLoading: true,
+      time:[],
       pickerOptions0: {
         disabledDate(time) {
           return time.getTime() > Date.now() - 8.64e6

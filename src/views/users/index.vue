@@ -12,6 +12,7 @@
         <el-col type="flex" :span="6" align="middle">
             <el-date-picker
               range-separator="-"
+              v-model="time"
               start-placeholder="开始时间"
               end-placeholder="结束时间"
               :picker-options="pickerOptions0"
@@ -67,7 +68,7 @@
                       <th>手机</th>
                       <th>已使用积分/总积分</th>
                       <th>注册时间</th>
-                      <th>认证时间</th>
+                      <th>状态</th>
                       <th class="actions text-right">
                         操作
                       </th>
@@ -75,7 +76,7 @@
                   </thead>
 
                   <tbody>
-                    <tr v-for="item in list" :key="'item' + item.id">
+                    <tr v-for="(item,i) in list" :key="'item' + i">
                       <td>
                         {{ item.uid }}
                       </td>
@@ -95,29 +96,49 @@
                         {{ item.username }}
                       </td>
                       <td>
+                        <span v-if="item.profile">
                         {{ item.profile.realname }}
+                        </span>
                       </td>
                       <td>
+                        <span v-if="item.profile">
+                          <span v-if="item.profile.gender==1">
+                             男
+                          </span>
+                          <span v-else-if="item.profile.gender==2">
+                             女
+                          </span>
+                          <span v-else-if="item.profile.gender===0">
+                             未知
+                          </span>
+                        </span>
+                      </td>
+                      <td class="text_center">
+                        {{ item.level }}
+                      </td>
+                      <td>
+                        <span v-if="item.profile">
                         {{ item.profile.mobile }}
+                        </span>
                       </td>
-                      <td>
+                      <td  class="text_center">
                         {{ item.usedPoint }}/{{ item.totalPoint }}
                       </td>
                       <td>
-                        {{ item.regTime }}
+                        {{ formatDates(item.regTime) }}
                       </td>
                       <td>
-                        {{ item.certifiedTime }}
+                        {{ item.status===100?'已禁用':'已启用' }}
                       </td>
 
                       <td class="no-sort no-click bread-actions">
                         <a
-                          :title="item.status==1?'取消禁用':'禁用'"
-                          class="btn btn-sm btn-info pull-right delete"
-                          @click.prevent.stop="click_status(item)"
+                          :title="item.status==100?'取消禁用':'禁用'"
+                          :class="item.status==100? 'btn btn-sm btn-info pull-right delete':'btn btn-sm btn-danger pull-right delete'"
+                          @click.prevent.stop="click_disable(item)"
                         >
-                          <i class="el-icon-top" />
-                          <span v-if="item.status==1">取消禁用</span>
+                          <!--<i class="voyager-trash" /> -->
+                          <span v-if="item.status==100">取消禁用</span>
                           <span v-if="item.status==0">禁用</span>
                         </a>
 
@@ -158,7 +179,10 @@
 </template>
 
 <script>
-import { userList, disableAccount } from '@/api/users'
+import { userList, disable,cancelDisable } from '@/api/users'
+import {
+  domain_name
+} from '@/api/common'
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 import Moment from 'moment';
 // import draggable from 'vuedraggable';
@@ -170,6 +194,8 @@ export default {
     return {
       list: null,
       listLoading: true,
+      time:[],
+      total:0,
       pickerOptions0: {
         disabledDate(time) {
           return time.getTime() > Date.now() - 8.64e6
@@ -200,36 +226,62 @@ export default {
     },
     click_disable(item) {
       this.$refs.myModal1 && this.$refs.myModal1.show(item)
-      if (item.status === 1) {
-        this.topParams.status = 0
+      if (item.status === 100) {
+        this.disableParams.status = 1
       } else {
-        this.topParams.status = 1
+        this.disableParams.status = 0
       }
     },
     handleOkDisable(finish, obj) {
-      this.topParams.id = obj.id
-      disableAccount(this.topParams).then(response => {
-        const info = response.data
-        this.sort_info.id = info.id
-        this.sort_info.sort = info.sort
-        this.$bvModal.show('modal-sm1')
-        finish && finish('success')
-        this.getList()
-      }).catch(error => {
-        alert(error)
-      })
+      this.disableParams.uid = obj.uid
+      if(this.disableParams.status===0){
+        disable(this.disableParams).then(response => {
+          const info = response.data
+          this.$bvModal.show('modal-sm1')
+          finish && finish('success')
+          this.getList()
+        }).catch(error => {
+          alert(error)
+        })
+      }else{
+        cancelDisable(this.disableParams).then(response => {
+          const info = response.data
+          this.$bvModal.show('modal-sm1')
+          finish && finish('success')
+          this.getList()
+        }).catch(error => {
+          alert(error)
+        })
+      }
     },
     onFilterChange() {
       console.log(this.listQuery)
       this.listQuery.page = 1
       this.getList()
     },
-    delete_article(item) {
-      this.pcount = item.pcount
-      this.$refs.myModal && this.$refs.myModal.show(item)
-    },
     formatDate(date, type) {
       return Moment(date).format(type)
+    },
+    formatDates(value){
+      if (value == null) {
+          return '';
+      } else {
+        value=value*1000
+          let date = new Date(value);
+          let y = date.getFullYear();// 年
+          let MM = date.getMonth() + 1;// 月
+          MM = MM < 10 ? ('0' + MM) : MM;
+          let d = date.getDate();// 日
+          d = d < 10 ? ('0' + d) : d;
+          let h = date.getHours();// 时
+          h = h < 10 ? ('0' + h) : h;
+          let m = date.getMinutes();// 分
+          m = m < 10 ? ('0' + m) : m;
+          let s = date.getSeconds();// 秒
+          s = s < 10 ? ('0' + s) : s;
+          var timer = y + '-' + MM + '-' + d + ' ' + h + ':' + m + ':' + s;
+          return timer
+      }
     },
     startQuery() {
       this.listQuery.page = 1
@@ -239,8 +291,13 @@ export default {
       this.listLoading = true
       userList(this.listQuery).then((response) => {
         this.list = response.data.records
+        response.data.records.forEach((val, index) => {
+          this.list.push(val);
+          this.list[index].avatar= domain_name() + this.list[index].avatar
+        })
         this.total = response.data.total
         this.listLoading = false
+        console.log(this.list)
       })
     }
   }
@@ -265,5 +322,8 @@ export default {
 .col-md-6 {
   margin: 0px;
   padding: 0px;
+}
+.text_center{
+  text-align: center;
 }
 </style>

@@ -16,9 +16,18 @@ export function getInfo(query) {
   })
 }
 
-export function disableAccount(query) {
+export function disable(query) {
   return request({
-    url: '/api/user/disable_account',
+    url: '/api/user/disable',
+    method: 'get',
+    params: query
+  })
+}
+
+
+export function cancelDisable(query) {
+  return request({
+    url: '/api/user/cancel_disable',
     method: 'get',
     params: query
   })
