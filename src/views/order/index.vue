@@ -61,7 +61,7 @@
           <div class="panel panel-bordered">
             <div class="panel-body">
               <div class="table-responsive">
-                <table id="dataTable" class="table table-striped table-hover">
+                <table id="dataTable" class="table">
                   <thead>
                     <tr>
                       <th>订单id</th>
@@ -80,10 +80,10 @@
                     </tr>
                   </thead>
 
-                  <tbody>
-                    <tr v-for="item in list" :key="'item' + item.id">
+                  <tbody v-for="item in list" :key="'item' + item.id" style="border:0;">
+                    <tr>
                       <td>
-                        {{ item.orderId }}
+                        <a @click="openGoodsList(item.id)" title="展开已购买商品" style="color:#005ae2">{{ item.orderId }}</a>
                       </td>
                       <td>
                         {{ item.uid }}
@@ -92,7 +92,7 @@
                         {{ item.consigneeName }}
                       </td>
 
-                      <td>{{item.expressNum}} </td>
+                      <td>{{ item.expressNum }} </td>
 
                       <td>
                         {{ item.expressCompany }}
@@ -112,13 +112,45 @@
                       </td>
 
                       <td class="no-sort no-click bread-actions">
-                        <router-link
-                          :to="'/article/edit?id=' + item.id"
+                        <a
+                          @click="edit(item)"
                           class="btn btn-sm btn-primary pull-right edit"
                         >
                           <i class="el-icon-edit" />
                           <span class="hidden-xs hidden-sm">修改</span>
-                        </router-link>
+                        </a>
+                      </td>
+                    </tr>
+                    <tr class="goods_list" :id="'goods_'+item.id" style="display:none">
+                      <td colspan="10" style="padding:0">
+                        <table id="dataTable1" class="table ">
+                          <thead>
+                            <tr>
+                              <th>商品id</th>
+                              <th>商品名称</th>
+                              <th>商品图片</th>
+                              <th>所需积分</th>
+                              <th>数量</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr v-for="item1 in item.orderGoodList"  :key="'item1_' + item1.id" style="border:0">
+                              <td>{{ item1.goodId }}</td>
+                              <td>{{ item1.goodsName }}</td>
+                              <td>
+                                <a
+                                  :href="item1.mainImg"
+                                  target="_blank"
+                                ><img
+                                  :src="item1.mainImg"
+                                  width="80"
+                                ></a>
+                              </td>
+                              <td>{{ item1.point }}</td>
+                              <td>{{ item1.quantity }}</td>
+                            </tr>
+                          </tbody>
+                        </table>
                       </td>
                     </tr>
                   </tbody>
@@ -137,13 +169,40 @@
         </div>
       </div>
     </div>
+    <my-modal
+      id="modal-sm2"
+      @ok="update_order"
+      :title="title"
+      modal-append-to-body="false"
+    >
+        <div class="form-group">
+          <label for="current_mood">物流公司</label>
+          <input v-model="info.expressCompany" class="form-control" />
+        </div>
+        <div class="form-group">
+          <label for="content">快递单号</label>
+          <input v-model="info.expressNum" class="form-control" />
+        </div>
+        <div class="form-group">
+          <label for="content">状态</label><br/>
+          <el-radio-group v-model="info.status">
+              <el-radio :label="0">
+                  未处理
+              </el-radio>
+              <el-radio :label="1">
+                  已发货
+              </el-radio>
+          </el-radio-group>
+        </div>
+    </my-modal>
   </div>
 </template>
 
 <script>
-import { orderList } from '@/api/order'
+import { orderList, getOrderInfo, updateOrder } from '@/api/order'
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 import Moment from 'moment';
+import $ from 'jquery'
 // import draggable from 'vuedraggable';
 
 export default {
@@ -154,7 +213,8 @@ export default {
       list: null,
       total: 0,
       listLoading: true,
-      time:[],
+      title: '',
+      time: [],
       pickerOptions0: {
         disabledDate(time) {
           return time.getTime() > Date.now() - 8.64e6
@@ -165,6 +225,12 @@ export default {
         { label: '未处理', value: 0 },
         { label: '已发货', value: 1 }
       ],
+      info: {
+        expressCompany: '',
+        expressNum: '',
+        orderId: '',
+        status: ''
+      },
       listQuery: {
         currentPage: 1,
         mobile: '',
@@ -177,9 +243,46 @@ export default {
     }
   },
   created() {
-    this.getList();
+    this.getList()
   },
   methods: {
+    edit(item) {
+      this.title = '编辑订单【' + item.orderId + '】'
+      this.info.orderId = item.orderId
+      this.getInfo()
+      this.$bvModal.show('modal-sm2')
+    },
+    getInfo() {
+      getOrderInfo({ orderId: this.info.orderId })
+        .then((response) => {
+          const data = response.data
+          this.info.orderId = data.orderId
+          this.info.expressCompany = data.expressCompany
+          this.info.expressNum = data.expressNum
+          this.info.status = data.status
+        })
+        .catch(() => {})
+    },
+    update_order(finish) {
+      updateOrder(this.info)
+        .then((data) => {
+          finish && finish('success')
+          this.getList()
+        })
+        .catch((error) => {
+          console.log(error)
+          finish && finish('error', error.message)
+        })
+    },
+    openGoodsList(id) {
+      const node = $('#goods_' + id)
+      if (node.is(':hidden')) {
+        node.show()
+      } else {
+        node.hide()
+      }
+      // $('.goods_list').hide()
+    },
     onTimeChange(t) {
       this.listQuery.startTime = this.formatDate(t[0], 'YYYY-MM-DD')
       this.listQuery.endTime = this.formatDate(t[1], 'YYYY-MM-DD')
