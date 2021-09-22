@@ -134,7 +134,7 @@
                       <td class="no-sort no-click bread-actions">
                         <a
                           :title="item.status==100?'取消禁用':'禁用'"
-                          :class="item.status==100? 'btn btn-sm btn-info pull-right delete':'btn btn-sm btn-danger pull-right delete'"
+                          :class="item.status==100? 'btn btn-sm btn-warning pull-right delete':'btn btn-sm btn-danger pull-right delete'"
                           @click.prevent.stop="click_disable(item)"
                         >
                           <!--<i class="voyager-trash" /> -->
